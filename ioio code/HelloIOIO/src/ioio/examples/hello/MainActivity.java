@@ -12,6 +12,7 @@ import ioio.lib.util.BaseIOIOLooper;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOActivity;
 import android.os.Bundle;
+import android.widget.ToggleButton;
 
 /**
  * This is the main activity of the HelloIOIO example application.
@@ -22,7 +23,7 @@ import android.os.Bundle;
  * HelloIOIOPower example.
  */
 public class MainActivity extends IOIOActivity {
-	//private ToggleButton button_;
+	private ToggleButton button_;
 
 	/**
 	 * Called when the activity is first created. Here we normally initialize
@@ -32,7 +33,7 @@ public class MainActivity extends IOIOActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		//button_ = (ToggleButton) findViewById(R.id.button);
+		button_ = (ToggleButton) findViewById(R.id.button);
 	}
 
 	/**
@@ -46,7 +47,7 @@ public class MainActivity extends IOIOActivity {
 		/** The on-board LED. */
 		private DigitalOutput led_;
 		private OutputStream out;
-        private InputStream in;
+		private InputStream in;
         private Uart uart;
 
 		/**
@@ -63,7 +64,7 @@ public class MainActivity extends IOIOActivity {
 			led_ = ioio_.openDigitalOutput(0, true);
 			uart = ioio_.openUart(6,7,9600, Parity.NONE, Uart.StopBits.ONE);
 			out = uart.getOutputStream();
-            in = uart.getInputStream();
+			in = uart.getInputStream();
 		}
 
 		/**
@@ -76,46 +77,41 @@ public class MainActivity extends IOIOActivity {
 		 */
 		@Override
 		public void loop() throws ConnectionLostException {
-			
 			try {
 				int available = in.available();
 				if(available > 0){
-					byte[] b = new byte[available];
-					in.read(b, 0, available);
-					String data = new String(b, "UTF-8");
-					
-					
-					if(data.equals("off")){
-						led_.write(false);
-						String a="led off";					
-						out.write(a.getBytes());
-					}
-					else if(data.equals("on")){
-						led_.write(true);
-						String a="led on";					
-						out.write(a.getBytes());
-					}
-					else{
-						led_.write(true);
-						Thread.sleep(500);
-						led_.write(false);
-						String a="???";					
-						out.write(a.getBytes());
-					}
+				byte[] b = new byte[available];
+				in.read(b, 0, available);
+				String data = new String(b, "UTF-8");
+
+
+				if(data.equals("off")){
+				led_.write(false);
+				String a="led off";	
+				out.write(a.getBytes());
+				}
+				else if(data.equals("on")){
+				led_.write(true);
+				String a="led on";	
+				out.write(a.getBytes());
+				}
+				else{
+				led_.write(true);
+				Thread.sleep(500);
+				led_.write(false);
+				String a="???";	
+				out.write(a.getBytes());
+				}
 				}
 				Thread.sleep(100);
-			} catch (IOException e2) {
-				
-			} catch (InterruptedException e) {
-			}
-			
-			
-			
-			
+				} catch (IOException e2) {
+
+				} catch (InterruptedException e) {
+				}
+
+
 		}
 	}
-	
-	 
 
 	/**
 	 * A method to create our IOIO thread.
